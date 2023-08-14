@@ -9,11 +9,11 @@ const APPID = 'wx47fbaf198086b31c';
 const SECRET = '0246be2d5fbdb1d82e61b2edc1603004';
 const GRANT_TYPE = 'authorization_code';
 const MYSQL_CONFIG = {
-  host: 'localhost',
-  port: '3306',
-  database: 'bill_data',
-  user: 'root',
-  password: 'ZDYang123@@'
+  host: '',
+  port: '',
+  database: '',
+  user: '',
+  password: '
 };
 
 
