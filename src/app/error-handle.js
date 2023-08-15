@@ -1,10 +1,12 @@
 const errorType = require('../constant/error-type');
 const errorHandle = (error, ctx) => {
-  let status = 200, message, code;
+  let status = 200,
+    message,
+    code;
   switch (error.message) {
     case errorType.ARGUMENT_IS_NOT_EMPTY:
       code = -1;
-      message = "参数不能为空或参数缺失";
+      message = '参数不能为空或参数缺失';
       break;
     case errorType.THIRD_PARTY_INTERFACE_ERROR:
       code = -1;
@@ -13,6 +15,7 @@ const errorHandle = (error, ctx) => {
     case errorType.DECRYPTION_FAILURE:
       code = -1;
       message = '解密失败';
+      break;
     case errorType.INTERNAL_PROBLEMS:
       code = -1;
       message = '服务器内部错误';
@@ -38,6 +41,14 @@ const errorHandle = (error, ctx) => {
     case errorType.NICKNAME_DUPLICATION:
       code = -1;
       message = '昵称重复';
+      break;
+    case errorType.USER_NOT_FOUND:
+      code = -1;
+      message = '用户未找到';
+      break;
+    case errorType.ERROR_INCORRECT_USERNAME_OR_PASSWORD:
+      code = -1;
+      message = '用户名或密码错误';
       break;
     default:
       status = 404;

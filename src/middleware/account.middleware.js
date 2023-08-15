@@ -16,10 +16,10 @@ const getWXProof = async (ctx, code) => {
     } else {
       throw new Error('获取openid失败');
     }
-  } catch(error) {
+  } catch (error) {
     return false;
   }
-}
+};
 
 // 解密微信用户信息
 const decryption = (session_key, encryptedData, iv) => {
@@ -27,16 +27,16 @@ const decryption = (session_key, encryptedData, iv) => {
     const pc = new WXBizDataCrypt(APPID, session_key);
     return pc.decryptData(encryptedData, iv);
   } catch (err) {
-    return false
+    return false;
   }
-}
+};
 
 // 错误处理
 const handleError = (errorMessage, logMessage, ctx) => {
   console.log(logMessage);
   const error = new Error(errorMessage);
   ctx.app.emit('error', error, ctx);
-}
+};
 
 class AccountMiddleware {
   async queryUserForLogin(ctx, next) {
@@ -95,7 +95,7 @@ class AccountMiddleware {
           openid,
           avatarUrl: wxUserInfo.avatarUrl,
           nickname: wxUserInfo.nickName
-        }
+        };
         const res = await register(params);
         if (!res) {
           handleError(errorType.INTERNAL_PROBLEMS, '数据库插入用户数据出错-注册', ctx);
@@ -118,12 +118,25 @@ class AccountMiddleware {
         ctx.loginInfo = result[0];
       }
     } else {
-      console.log('账号登录')
+      console.log('账号登录');
       if ( !username || !password ) {
         const error = new Error(errorType.ARGUMENT_IS_NOT_EMPTY);
         ctx.app.emit('error', error, ctx);
         return;
       }
+      // 判断数据库中是否有当前用户
+      const [ result ] = await queryUser({username});
+      if (!result) {
+        handleError(errorType.USER_NOT_FOUND, '用户未找到', ctx);
+        return;
+      }
+      // 判断用户名与账号是否匹配
+      const { username: name, password: pwd } = result;
+      if (!(username === name && password === pwd)) {
+        handleError(errorType.ERROR_INCORRECT_USERNAME_OR_PASSWORD, '账号或密码错误', ctx);
+        return;
+      }
+      ctx.loginInfo = result;
     }
     await next();
   }
@@ -152,7 +165,6 @@ class AccountMiddleware {
 
     await next();
   }
-
 }
 
 module.exports = new AccountMiddleware();

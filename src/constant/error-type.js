@@ -9,7 +9,8 @@ const INVALID_PARAMETER = 'illegal_parameter'; // 非法参数
 const ACCOUNT_ALREADY_EXISTS = 'account_already_exists'; // 账号已存在
 const NICKNAME_DUPLICATION = 'nickname_duplication';
 const THE_ACCOUNT_HAS_BEEN_BOUND = 'the_account_has_been_bound'; // 当前账号已被绑定
-
+const USER_NOT_FOUND = 'user_not_found'; // 用户未找到
+const ERROR_INCORRECT_USERNAME_OR_PASSWORD = 'error_incorrect_username_or_password'; // 用户名或密码错误
 
 module.exports = {
   ARGUMENT_IS_NOT_EMPTY,
@@ -22,5 +23,7 @@ module.exports = {
   INVALID_PARAMETER,
   ACCOUNT_ALREADY_EXISTS,
   THE_ACCOUNT_HAS_BEEN_BOUND,
-  NICKNAME_DUPLICATION
+  NICKNAME_DUPLICATION,
+  USER_NOT_FOUND,
+  ERROR_INCORRECT_USERNAME_OR_PASSWORD
 };

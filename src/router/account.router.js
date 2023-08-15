@@ -13,6 +13,6 @@ const accountRouter = new Router({prefix: '/account'});
 
 
 accountRouter.post('/login', queryUserForLogin, login);
-accountRouter.post('/bind', authVerify, queryUserForBind,  bind);
+accountRouter.post('/bind', authVerify, queryUserForBind, bind);
 
 module.exports = accountRouter;

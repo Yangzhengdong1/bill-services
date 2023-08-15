@@ -1,7 +1,6 @@
 const connection = require('../app/database');
 
 class AccountService {
-
   async queryUser(params) {
     try {
       let statement, param;
@@ -10,8 +9,16 @@ class AccountService {
           id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
         FROM users WHERE openid = ?;
       `;
-      const statementForName = ` SELECT * FROM users WHERE name = ?;`;
-      const statementForId = ` SELECT id AS userId, name AS username, FROM users WHERE id = ?;`;
+      const statementForName = `
+        SELECT 
+          id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
+        FROM users WHERE name = ?;
+      `;
+      const statementForId = `
+        SELECT 
+          id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
+        FROM users WHERE id = ?;
+      `;
       // let statement = params.hasOwnProperty('openid') ? statementForOpenid : statementForName;
       // let param = params.hasOwnProperty('openid') ? params.openid : params.username;
       switch (Object.keys(params)[0]) {
@@ -30,7 +37,8 @@ class AccountService {
       }
       const result = await connection.execute(statement, [ param ]);
       return result[0];
-    } catch(error) {
+    } catch (error) {
+      console.log(error, '查询用户数据库报错');
       return false;
     }
   }
@@ -41,7 +49,7 @@ class AccountService {
       const statement = `INSERT INTO users(openid, avatar_url, nickname) VALUES(?, ?, ?);`;
       const [ result ] = await connection.execute(statement, [ openid, avatarUrl, nickname ]);
       return result;
-    } catch(error) {
+    } catch (error) {
       return false;
     }
   }
@@ -49,14 +57,12 @@ class AccountService {
   async bind(params) {
     const { password, username, userId } = params;
     try {
-      const statement = ` UPDATE users SET name = ?, password = ? WHERE id = ?;`;
+      const statement = `UPDATE users SET name = ?, password = ? WHERE id = ?;`;
       const [ result ] = connection.execute(statement, [username, password, userId]);
       return result;
     } catch (err) {
       return false;
     }
-
-
   }
 }
 

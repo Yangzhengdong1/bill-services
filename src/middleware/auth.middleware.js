@@ -15,10 +15,10 @@ class AuthMiddleware {
     try {
       const result = jwt.verify(token, PUBLIC_KEY, {
         algorithms: ['RS256']
-      }, undefined);
+      }, null);
       ctx.request.body.user = result;
       console.log('解密后的用户信息：', result);
-    } catch(err) {
+    } catch (err) {
       const error = new Error(errorType.UNAUTHORIZED);
       ctx.app.emit('error', error, ctx);
       console.log(error, '解密token出错');

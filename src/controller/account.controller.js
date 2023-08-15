@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
-const { PRIVATE_KEY } = require("../app/config");
-const errorType = require("../constant/error-type");
-const { bind } = require('../service/account.service');
+const { PRIVATE_KEY } = require('../app/config');
+const errorType = require('../constant/error-type');
+const accountService = require('../service/account.service');
 
 const createToken = (nickname, userId) => {
   const payload = { nickname, userId };
@@ -13,16 +13,15 @@ const createToken = (nickname, userId) => {
   try {
     const token = jwt.sign(payload, PRIVATE_KEY, options, null);
     return token;
-  } catch(err) {
+  } catch (err) {
+    console.log(err, '颁发token出错');
     return false;
   }
 };
 
-
 class AccountController {
   async login(ctx) {
     const { nickname, userId, avatarUrl, username, password } = ctx.loginInfo;
-
     const token = createToken(nickname, userId);
     if (!token) {
       console.log('token生成失败');
@@ -30,21 +29,23 @@ class AccountController {
       ctx.app.emit('error', error, ctx);
       return;
     }
-    const binding = (username && password) ? 1 : 0;
+    const binding = username && password ? 1 : 0;
     ctx.body = {
       code: 0,
       data: { token, username, nickname, avatarUrl, binding, userId },
       message: '登录成功'
-    }
+    };
   }
 
   async bind(ctx) {
     const { username, password } = ctx.request.body;
     const { userId } = ctx.request.body.user;
+    const params = {username, password, userId};
     console.log(username, password, userId);
+    const result = await accountService.bind(params);
+    console.log(result);
     ctx.body = '绑定账号成功';
   }
-
 }
 
 module.exports = new AccountController();
