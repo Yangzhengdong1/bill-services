@@ -10,7 +10,7 @@ class BillMiddleware {
       return;
     }
     // 判断参数是否合法
-    const payTypes = [0, 1, 2, 3];
+    const payTypes = [0, 1, 2, 3, 4];
     const billTypes = [0, 1];
     if (!payTypes.some(item => item === payType) || !billTypes.some(item => item === billType)) {
       errorMessage = new Error(errorType.INVALID_PARAMETER);

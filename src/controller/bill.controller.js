@@ -1,5 +1,6 @@
-const { create, getBillList } = require('../service/bill.service');
+const { create, getBillList, getAmount } = require('../service/bill.service');
 const errorType = require('../constant/error-type');
+const { dateFormatFun } = require('../utils/utils');
 
 class BillController {
   async create(ctx) {
@@ -19,7 +20,10 @@ class BillController {
   async list(ctx) {
     const { userId } = ctx.request.body.user;
     const { offset, size, date } = ctx.query.listParams;
-    const result = await getBillList({ offset, size, date, userId });
+    const dateFormat = dateFormatFun(date);
+    const result = await getBillList({ offset, size, date, userId, dateFormat });
+    let amount = await getAmount({userId, date});
+    amount = amount ? amount : {};
     if (!result) {
       const errorMessage = new Error(errorType.INTERNAL_PROBLEMS);
       ctx.app.emit('error', errorMessage, ctx);
@@ -27,11 +31,10 @@ class BillController {
     }
     ctx.body = {
       code: 0,
-      data: result,
+      data: {records: result, amount},
       message: '账单列表获取成功'
     };
   }
-
 }
 
 module.exports = new BillController();

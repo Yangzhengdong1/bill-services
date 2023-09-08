@@ -8,7 +8,8 @@ const payType = {
   支付宝: 0,
   微信: 1,
   银行卡: 2,
-  花呗or白条: 3
+  花呗or白条: 3,
+  收入: 4
 };
 
 const billType = {
