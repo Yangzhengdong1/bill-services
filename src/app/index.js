@@ -1,12 +1,15 @@
 const Koa = require('koa');
+const path = require('path');
 const cors = require('koa2-cors');
 const bodyParser = require('koa-bodyparser');
+const koaStatic = require('koa-static');
 
 const billRouter = require('../router/bill.router');
 const accountRouter = require('../router/account.router');
 const errorHandle = require('./error-handle');
 
 const app = new Koa();
+app.use(koaStatic(path.resolve(__dirname, '../public')));
 
 app.use(
   cors({

@@ -1,30 +1,22 @@
 const connection = require('../app/database');
+const { dateFormatFun } = require('../utils/utils');
 
 const filterStatement = (alias, date) => {
-  let dateFormat = '';
-  const dateLength = date.split('-').length;
-  switch (dateLength) {
-    case 1:
-      dateFormat = '%Y';
-      break;
-    case 2:
-      dateFormat = '%Y-%m';
-      break;
-    case 3:
-      dateFormat = '%Y-%m-%d';
-      break;
-    default:
-      break;
-  }
+  let dateFormat = dateFormatFun(date);
+  console.log('dateFormat', dateFormat);
   const statement = `
     SELECT 
-    SUM(amount) AS '${alias}' 
-    FROM bills WHERE 
-    user_id = ? AND 
-    type = ? AND 
-    DATE_FORMAT(createAt, '${dateFormat}') = ?;
+      FORMAT(SUM(amount), 2) AS '${alias}' 
+      FROM 
+      bills WHERE user_id = ? AND type = ?;
   `;
-  return statement;
+  const statementDate = `
+    SELECT 
+      FORMAT(SUM(amount), 2) AS '${alias}' 
+      FROM bills WHERE user_id = ? AND type = ? AND 
+      DATE_FORMAT(createAt, '${dateFormat}') = ?;
+  `;
+  return dateFormat ? statementDate : statement;
 };
 
 class BillService {
@@ -64,7 +56,7 @@ class BillService {
     }
     const statement = `
       SELECT 
-      type AS type, pay_type AS payType, remark AS remark, amount AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
+      type AS type, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
       FROM bills 
       WHERE user_id = ? ${optionalStatement} LIMIT ?, ?;
     `;
@@ -85,15 +77,18 @@ class BillService {
   async getAmount(params) {
     const { userId, date } = params;
     const inStatement = filterStatement('inAmount', date);
+    const inParams = date ? [userId, 0, date] : [userId, 0];
     const outStatement = filterStatement('outAmount', date);
+    const outParams = date ? [userId, 1, date] : [userId, 1];
+    console.log('inStatement', inStatement);
     try {
       // 收入
-      const [inResult] = await connection.execute(inStatement, [userId, 0, date]);
+      const [inResult] = await connection.execute(inStatement, inParams);
       // 支出
-      const [outResult] = await connection.execute(outStatement, [userId, 1, date]);
+      const [outResult] = await connection.execute(outStatement, outParams);
       const { inAmount } = inResult[0];
       const { outAmount } = outResult[0];
-      return { inAmount: inAmount ? inAmount : 0, outAmount: outAmount ? outAmount : 0 };
+      return { inAmount: inAmount ? inAmount : '0.00', outAmount: outAmount ? outAmount : '0.00' };
     } catch (error) {
       console.log('查询收入支出数据出错', error);
       return false;

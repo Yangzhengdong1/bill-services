@@ -46,7 +46,9 @@ class AccountService {
   async register(params) {
     try {
       const { openid, avatarUrl, nickname } = params;
-      const statement = `INSERT INTO users(openid, avatar_url, nickname) VALUES(?, ?, ?);`;
+      const statement = `
+        INSERT INTO users(openid, avatar_url, nickname) VALUES(?, ?, ?);
+      `;
       const [ result ] = await connection.execute(statement, [ openid, avatarUrl, nickname ]);
       return result;
     } catch (error) {
@@ -57,7 +59,9 @@ class AccountService {
   async bind(params) {
     const { password, username, userId } = params;
     try {
-      const statement = `UPDATE users SET name = ?, password = ? WHERE id = ?;`;
+      const statement = `
+        UPDATE users SET name = ?, password = ? WHERE id = ?;
+      `;
       const [ result ] = connection.execute(statement, [username, password, userId]);
       return result;
     } catch (err) {

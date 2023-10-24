@@ -1,6 +1,11 @@
 const errorType = require('../constant/error-type');
 
 class BillMiddleware {
+  /**
+   * @description: 校验创建账单接口参数是否规范
+   * @param {*} ctx
+   * @param {*} next
+   */
   async paramsVerify(ctx, next) {
     let errorMessage;
     const { payType, billType, amount } = ctx.request.body;
@@ -20,6 +25,11 @@ class BillMiddleware {
     await next();
   }
 
+  /**
+   * @description: 校验请求账单列表接口参数是否缺失
+   * @param {*} ctx
+   * @param {*} next
+   */
   async verifyList(ctx, next) {
     let { pageSize, pageNum, date } = ctx.query;
     if (!pageSize || !pageNum) {
@@ -36,6 +46,22 @@ class BillMiddleware {
     const offset = ((pageNum <= 0 ? 1 : pageNum) - 1) * pageSize + '';
     const size = (pageSize <= 0 ? 1 : pageSize) + '';
     ctx.query.listParams = {offset, size, date};
+    await next();
+  }
+
+
+  /**
+   * @description: 校验请求账单金额接口是否传递参数
+   * @param {*} ctx
+   * @param {*} next
+   */
+  async verifyAmount(ctx, next) {
+    let { date } = ctx.query;
+    if (!date) {
+      const errorMessage = new Error(errorType.INVALID_PARAMETER);
+      ctx.app.emit('error', errorMessage);
+      return;
+    }
     await next();
   }
 }
