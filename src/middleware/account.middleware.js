@@ -1,10 +1,11 @@
 const axios = require('axios');
 
-const { APPID, SECRET, GRANT_TYPE } = require("../app/config");
+const config = require("../app/config");
 const errorType = require("../constant/error-type");
 const { queryUser, register } = require('../service/account.service');
 const WXBizDataCrypt = require("../utils/WXBizDataCrypt");
 
+const { APPID, SECRET, GRANT_TYPE } = config;
 // 获取微信凭证
 const getWXProof = async (ctx, code) => {
   try {
