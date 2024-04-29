@@ -9,7 +9,7 @@ const errorHandle = require('./error-handle');
 
 const billRouter = require('../router/bill.router');
 const accountRouter = require('../router/account.router');
-const templateRouter = require('../router/template_router');
+const templateRouter = require('../router/template.router');
 
 
 const app = new Koa();

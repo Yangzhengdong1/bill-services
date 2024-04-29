@@ -41,10 +41,16 @@ class AccountController {
     const { username, password } = ctx.request.body;
     const { userId } = ctx.request.body.user;
     const params = {username, password, userId};
-    console.log(username, password, userId);
+    console.log(username, password, userId, "绑定参数");
     const result = await accountService.bind(params);
-    console.log(result);
-    ctx.body = '绑定账号成功';
+    if (!result) {
+      ctx.app.emit('error', errorType.INTERNAL_PROBLEMS, ctx);
+    } else {
+      ctx.body = {
+        code: 0,
+        message: "账号绑定成功"
+      };
+    }
   }
 }
 

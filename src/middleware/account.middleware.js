@@ -1,4 +1,5 @@
 const axios = require('axios');
+const bcrypt = require("bcrypt");
 
 const config = require("../app/config");
 const errorType = require("../constant/error-type");
@@ -6,6 +7,7 @@ const { queryUser, register } = require('../service/account.service');
 const WXBizDataCrypt = require("../utils/WXBizDataCrypt");
 
 const { APPID, SECRET, GRANT_TYPE } = config;
+const saltRounds = 10;
 // 获取微信凭证
 const getWXProof = async (ctx, code) => {
   try {
@@ -31,6 +33,9 @@ const decryption = (session_key, encryptedData, iv) => {
     return false;
   }
 };
+
+// hash 加密用户密码
+const hashEncryption = password => bcrypt.hashSync(password, saltRounds);
 
 // 错误处理
 const handleError = (errorMessage, logMessage, ctx) => {
@@ -133,7 +138,9 @@ class AccountMiddleware {
       }
       // 判断用户名与账号是否匹配
       const { username: name, password: pwd } = result;
-      if (!(username === name && password === pwd)) {
+      const compResult = bcrypt.compareSync(password, pwd);
+      // if (!(username === name && password === pwd)) {
+      if (!(username === name && compResult)) {
         handleError(errorType.ERROR_INCORRECT_USERNAME_OR_PASSWORD, '账号或密码错误', ctx);
         return;
       }
@@ -163,6 +170,9 @@ class AccountMiddleware {
       handleError(errorType.NICKNAME_DUPLICATION, '昵称重复', ctx);
       return;
     }
+
+    // hash 加密
+    ctx.request.body.password = hashEncryption(password);
 
     await next();
   }

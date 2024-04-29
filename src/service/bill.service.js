@@ -3,17 +3,17 @@ const { dateFormatFun } = require('../utils/utils');
 
 const filterStatement = (alias, date) => {
   let dateFormat = dateFormatFun(date);
-  console.log('dateFormat', dateFormat);
+  // console.log('dateFormat', dateFormat);
   const statement = `
-    SELECT 
-      FORMAT(SUM(amount), 2) AS '${alias}' 
-      FROM 
+    SELECT
+      FORMAT(SUM(amount), 2) AS '${alias}'
+      FROM
       bills WHERE user_id = ? AND type = ?;
   `;
   const statementDate = `
-    SELECT 
-      FORMAT(SUM(amount), 2) AS '${alias}' 
-      FROM bills WHERE user_id = ? AND type = ? AND 
+    SELECT
+      FORMAT(SUM(amount), 2) AS '${alias}'
+      FROM bills WHERE user_id = ? AND type = ? AND
       DATE_FORMAT(createAt, '${dateFormat}') = ?;
   `;
   return dateFormat ? statementDate : statement;
@@ -34,7 +34,7 @@ class BillService {
       const [ result ] = await connection.execute(statement, [billType, payType, remark, userId, amount]);
       return result;
     } catch (err) {
-      console.log('数据库插入数据失败');
+      console.log('数据库插入数据失败', err);
       return false;
     }
   }
@@ -55,9 +55,9 @@ class BillService {
       queryField = [userId, date, offset, size];
     }
     const statement = `
-      SELECT 
+      SELECT
       type AS type, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
-      FROM bills 
+      FROM bills
       WHERE user_id = ? ${optionalStatement} LIMIT ?, ?;
     `;
     try {
@@ -80,7 +80,7 @@ class BillService {
     const inParams = date ? [userId, 0, date] : [userId, 0];
     const outStatement = filterStatement('outAmount', date);
     const outParams = date ? [userId, 1, date] : [userId, 1];
-    console.log('inStatement', inStatement);
+    // console.log('inStatement', inStatement);
     try {
       // 收入
       const [inResult] = await connection.execute(inStatement, inParams);
