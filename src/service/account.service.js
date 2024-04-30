@@ -5,17 +5,17 @@ class AccountService {
     try {
       let statement, param;
       const statementForOpenid = `
-        SELECT 
+        SELECT
           id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
         FROM users WHERE openid = ?;
       `;
       const statementForName = `
-        SELECT 
+        SELECT
           id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
         FROM users WHERE name = ?;
       `;
       const statementForId = `
-        SELECT 
+        SELECT
           id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
         FROM users WHERE id = ?;
       `;
@@ -62,7 +62,7 @@ class AccountService {
       const statement = `
         UPDATE users SET name = ?, password = ? WHERE id = ?;
       `;
-      const [ result ] = connection.execute(statement, [username, password, userId]);
+      const [ result ] = await connection.execute(statement, [username, password, userId]);
       return result;
     } catch (err) {
       return false;

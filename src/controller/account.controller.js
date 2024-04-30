@@ -44,7 +44,8 @@ class AccountController {
     console.log(username, password, userId, "绑定参数");
     const result = await accountService.bind(params);
     if (!result) {
-      ctx.app.emit('error', errorType.INTERNAL_PROBLEMS, ctx);
+      const error = new Error(errorType.INTERNAL_PROBLEMS);
+      ctx.app.emit('error', error, ctx);
     } else {
       ctx.body = {
         code: 0,
