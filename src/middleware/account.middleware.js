@@ -5,6 +5,7 @@ const config = require("../app/config");
 const errorType = require("../constant/error-type");
 const { queryUser, register } = require('../service/account.service');
 const WXBizDataCrypt = require("../utils/WXBizDataCrypt");
+const { generateRandomString } = require("../utils/utils");
 
 const { APPID, SECRET, GRANT_TYPE } = config;
 const saltRounds = 10;
@@ -174,6 +175,42 @@ class AccountMiddleware {
     // hash 加密
     ctx.request.body.password = hashEncryption(password);
 
+    await next();
+  }
+
+  async visitorLoginVerify(ctx, next) {
+    let { password, username } = ctx.request.body;
+    if ( !username || !password ) {
+      const error = new Error(errorType.ARGUMENT_IS_NOT_EMPTY);
+      ctx.app.emit('error', error, ctx);
+      return;
+    }
+    const [ result1 ] = await queryUser({username});
+    if (!!result1) {
+      handleError(errorType.ACCOUNT_ALREADY_EXISTS, '用户已存在-游客注册', ctx);
+      return;
+    }
+    // 注册
+    password = hashEncryption(password);
+    const params = {
+      openid: generateRandomString("YK", 10),
+      avatarUrl: generateRandomString("AVATAR", 15),
+      nickname: generateRandomString("NICK", 5),
+      username,
+      password
+    }
+    const res = await register(params);
+    if (!res) {
+      handleError(errorType.INTERNAL_PROBLEMS, '数据库插入用户数据出错-游客注册', ctx);
+      return;
+    }
+    // 再次查询用户数据，并保存下来，用以登录
+    const result = await queryUser({username});
+    if (!result.length) {
+      handleError(errorType.INTERNAL_PROBLEMS, '数据库查询用户信息出错-注册', ctx);
+      return;
+    }
+    ctx.loginInfo = result[0];
     await next();
   }
 }

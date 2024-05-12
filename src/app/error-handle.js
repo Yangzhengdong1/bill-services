@@ -38,6 +38,10 @@ const errorHandle = (error, ctx) => {
       code = -1;
       message = '当前账号已被绑定';
       break;
+    case errorType.ACCOUNT_ALREADY_EXISTS:
+      code = -1;
+      message = '用户名重复';
+      break;
     case errorType.NICKNAME_DUPLICATION:
       code = -1;
       message = '昵称重复';

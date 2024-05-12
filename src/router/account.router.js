@@ -1,7 +1,8 @@
 const Router = require('koa-router');
 const {
   queryUserForLogin,
-  queryUserForBind
+  queryUserForBind,
+  visitorLoginVerify
 } = require('../middleware/account.middleware');
 const {
   login,
@@ -13,6 +14,7 @@ const accountRouter = new Router({prefix: '/account'});
 
 
 accountRouter.post('/login', queryUserForLogin, login);
+accountRouter.post('/visitor-login', visitorLoginVerify, login);
 accountRouter.post('/bind', authVerify, queryUserForBind, bind);
 
 module.exports = accountRouter;
