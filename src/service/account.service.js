@@ -68,6 +68,17 @@ class AccountService {
       return false;
     }
   }
+
+  async permission(params) {
+    const { id, userId } = params;
+    const statement = `SELECT * FROM bills WHERE id = ? AND user_id = ?`;
+    try {
+      const [result] = await connection.execute(statement, [id, userId]);
+      return result;
+    } catch (err) {
+      console.log("查询出错了", err);
+    }
+  }
 }
 
 module.exports = new AccountService();

@@ -1,6 +1,7 @@
 const Router = require('koa-router');
 const {
-  authVerify
+  authVerify,
+  permissionVerify
 } = require('../middleware/auth.middleware');
 const {
   paramsVerify,
@@ -10,7 +11,8 @@ const {
 const {
   create,
   list,
-  amount
+  amount,
+  remove
 } = require('../controller/bill.controller');
 
 const billRouter = new Router({prefix: '/bill'});
@@ -18,5 +20,6 @@ const billRouter = new Router({prefix: '/bill'});
 billRouter.post('/create', authVerify, paramsVerify, create);
 billRouter.get('/list', authVerify, verifyList, list);
 billRouter.get('/amount', authVerify, verifyAmount, amount);
+billRouter.delete('/remove', permissionVerify, remove);
 
 module.exports = billRouter;

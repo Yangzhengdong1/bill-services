@@ -94,6 +94,17 @@ class BillService {
       return false;
     }
   }
+
+  async remove(id) {
+    const statement =  `DELETE FROM bills WHERE id = ?`;
+    try {
+      const [ result ] = await connection.execute(statement, [id]);
+      return result;
+    } catch (err) {
+      console.log("删除账单数据失败：", err);
+      return false;
+    }
+  }
 }
 
 module.exports = new BillService();

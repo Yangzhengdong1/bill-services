@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { PUBLIC_KEY } = require('../app/config');
 const errorType = require('../constant/error-type');
+const { permission } = require("../service/account.service");
 
 class AuthMiddleware {
   async authVerify(ctx, next) {
@@ -24,6 +25,20 @@ class AuthMiddleware {
       console.log(error, '解密token出错');
       return;
     }
+    await next();
+  }
+
+  async permissionVerify(ctx, next) {
+    // const { userId } = ctx.request.body.user;
+    const userId = 1;
+    const { id } = ctx.request.body;
+    const result = await permission({id, userId});
+    if (!result.length) {
+      const error = new Error(errorType.INTERNAL_PROBLEMS);
+      ctx.app.emit('error', error, ctx);
+      return;
+    }
+    // ctx.request.body.permissionParams = { userId, id };
     await next();
   }
 }
