@@ -29,8 +29,7 @@ class AuthMiddleware {
   }
 
   async permissionVerify(ctx, next) {
-    // const { userId } = ctx.request.body.user;
-    const userId = 1;
+    const { userId } = ctx.request.body.user;
     const { id } = ctx.request.body;
     const result = await permission({id, userId});
     if (!result.length) {
