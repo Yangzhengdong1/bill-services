@@ -45,13 +45,24 @@ class AccountService {
 
   async register(params) {
     try {
-      const { openid, avatarUrl, nickname } = params;
-      const statement = `
-        INSERT INTO users(openid, avatar_url, nickname) VALUES(?, ?, ?);
-      `;
-      const [ result ] = await connection.execute(statement, [ openid, avatarUrl, nickname ]);
+      const { openid, avatarUrl, nickname, username, password } = params;
+      let statement = "", paramArray = [];
+      if (username && password) {
+        statement = `
+          INSERT INTO users(openid, avatar_url, nickname, name, password) VALUES(?, ?, ?, ?, ?);
+        `;
+        paramArray = [ openid, avatarUrl, nickname, username, password ];
+      } else {
+        statement = `
+          INSERT INTO users(openid, avatar_url, nickname) VALUES(?, ?, ?);
+        `;
+        paramArray = [ openid, avatarUrl, nickname ];
+      }
+
+      const [ result ] = await connection.execute(statement, paramArray);
       return result;
     } catch (error) {
+      console.log(error, "用户注册");
       return false;
     }
   }
