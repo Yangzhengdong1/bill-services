@@ -30,7 +30,19 @@ class AuthMiddleware {
 
   async permissionVerify(ctx, next) {
     const { userId } = ctx.request.body.user;
-    const { id } = ctx.request.body;
+    let params = {};
+    switch (ctx.method) {
+      case 'GET':
+        params = ctx.query;
+        break;
+        case 'POST':
+          params = ctx.request.body;
+          break;
+      default:
+        params = ctx.params;
+        break;
+    }
+    const { id } = params;
     const result = await permission({id, userId});
     if (!result.length) {
       const error = new Error(errorType.INTERNAL_PROBLEMS);

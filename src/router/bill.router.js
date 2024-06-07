@@ -12,7 +12,8 @@ const {
   create,
   list,
   amount,
-  remove
+  remove,
+  detail
 } = require('../controller/bill.controller');
 
 const billRouter = new Router({prefix: '/bill'});
@@ -20,6 +21,7 @@ const billRouter = new Router({prefix: '/bill'});
 billRouter.post('/create', authVerify, paramsVerify, create);
 billRouter.get('/list', authVerify, verifyList, list);
 billRouter.get('/amount', authVerify, verifyAmount, amount);
-billRouter.delete('/remove', permissionVerify, remove);
+billRouter.delete('/remove/:id', authVerify, permissionVerify, remove);
+billRouter.get('/detail', authVerify, permissionVerify, detail);
 
 module.exports = billRouter;

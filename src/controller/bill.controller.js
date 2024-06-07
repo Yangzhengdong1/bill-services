@@ -1,4 +1,4 @@
-const { create, getBillList, getAmount, remove } = require('../service/bill.service');
+const { create, getBillList, getAmount, remove, detail } = require('../service/bill.service');
 const errorType = require('../constant/error-type');
 const { dateFormatFun, nowDateFormatTool } = require('../utils/utils');
 
@@ -66,7 +66,7 @@ class BillController {
   }
 
   async remove(ctx) {
-    const { id } = ctx.request.body;
+    const { id } = ctx.params;
     const result = await remove(id);
     if (!result) {
       const error = new Error(errorType.INTERNAL_PROBLEMS);
@@ -77,6 +77,22 @@ class BillController {
       code: 0,
       message: "删除成功"
     }
+  }
+
+  async detail(ctx) {
+    const { id } = ctx.query;
+    const result = await detail(id);
+    if (!result) {
+      const error = new Error(errorType.INTERNAL_PROBLEMS);
+      ctx.app.emit('error', error, ctx);
+      return;
+    }
+    ctx.body = {
+      code: 0,
+      data: result[0],
+      message: "操作成功"
+    }
+    console.log(result);
   }
 }
 

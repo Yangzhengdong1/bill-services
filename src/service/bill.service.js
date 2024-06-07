@@ -56,7 +56,7 @@ class BillService {
     }
     const statement = `
       SELECT
-      type AS type, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
+      type AS type, id AS wid, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
       FROM bills
       WHERE user_id = ? ${optionalStatement} LIMIT ?, ?;
     `;
@@ -102,6 +102,20 @@ class BillService {
       return result;
     } catch (err) {
       console.log("删除账单数据失败：", err);
+      return false;
+    }
+  }
+
+  async detail(id) {
+    const statement = `
+      SELECT
+        DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime, amount AS amount, remark AS remark, pay_type AS payType, type AS billType, id AS wid
+      FROM bills WHERE id = ?;`;
+    try {
+      const [ result ] = await connection.execute(statement, [id]);
+      return result;
+    } catch (err) {
+      console.log("查询账单详情失败：", err);
       return false;
     }
   }
