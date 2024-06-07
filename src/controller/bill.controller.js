@@ -1,4 +1,4 @@
-const { create, getBillList, getAmount, remove, detail } = require('../service/bill.service');
+const { create, getBillList, getAmount, remove, detail, update } = require('../service/bill.service');
 const errorType = require('../constant/error-type');
 const { dateFormatFun, nowDateFormatTool } = require('../utils/utils');
 
@@ -92,7 +92,20 @@ class BillController {
       data: result[0],
       message: "操作成功"
     }
-    console.log(result);
+  }
+
+  async update(ctx) {
+    const params = ctx.request.body;
+    const result = await update(params);
+    if (!result) {
+      const error = new Error(errorType.INTERNAL_PROBLEMS);
+      ctx.app("error", error, ctx);
+      return;
+    }
+    ctx.body = {
+      code: 0,
+      message: "修改成功"
+    }
   }
 }
 

@@ -56,7 +56,7 @@ class BillService {
     }
     const statement = `
       SELECT
-      type AS type, id AS wid, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
+      type AS type, id AS id, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
       FROM bills
       WHERE user_id = ? ${optionalStatement} LIMIT ?, ?;
     `;
@@ -116,6 +116,18 @@ class BillService {
       return result;
     } catch (err) {
       console.log("查询账单详情失败：", err);
+      return false;
+    }
+  }
+
+  async update(params) {
+    const { payType, billType, id, remark, amount } = params;
+    const statement = `UPDATE bills SET pay_type = ?, type = ?, remark = ?, amount = ? WHERE id = ?`;
+    try {
+      const [result] = await connection.execute(statement, [payType, billType, remark, amount, id]);
+      return result;
+    } catch (err) {
+      console.log("更新账单失败：", err);
       return false;
     }
   }
