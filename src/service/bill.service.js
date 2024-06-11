@@ -44,7 +44,7 @@ class BillService {
    * @param {*} params {offset, size, userId, date, dateFormat:格式(年-月-日)，[,payType[,billType]]}
    * @return {*} 返回数据库查询结果
    */
-  async getBillList(params) {
+  async getBillListOld(params) {
     const { offset, size, userId, date, dateFormat } = params;
     // 可选参数 date、payType、billType
     let optionalStatement = '';
@@ -69,6 +69,35 @@ class BillService {
     }
   }
 
+  async getBillList(params) {
+    const { offset, size, userId, startTime, endTime } = params;
+    // 可选参数 startTime, endTime、payType、billType
+    let optionalStatement = '';
+    let queryField = [userId, offset, size];
+    const startTimeSta = `AND createAt >= ?`;
+    const endTimeSta = `AND createAt BETWEEN ? AND ?`;
+    if (startTime) {
+      optionalStatement = startTimeSta;
+      queryField = [userId, startTime, offset, size];
+    }
+    if (startTime && endTime) {
+      optionalStatement = endTimeSta;
+      queryField = [userId, startTime, endTime, offset, size];
+    }
+    const statement = `
+      SELECT
+      type AS type, id AS id, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
+      FROM bills
+      WHERE user_id = ? ${optionalStatement} ORDER BY createAt DESC LIMIT ?, ?;
+    `;
+    try {
+      const [ result ] = await connection.execute(statement, queryField);
+      return result;
+    } catch (err) {
+      console.log('数据库查询账单失败', err);
+      return false;
+    }
+  }
   /**
    * @description: 查询收入支出
    * @param {*} params{ userId, date:'2023-09-06' }

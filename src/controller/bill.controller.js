@@ -17,7 +17,7 @@ class BillController {
     }
   }
 
-  async list(ctx) {
+  async listOld(ctx) {
     const { userId } = ctx.request.body.user;
     // const userId = 1;
     const { offset, size, date } = ctx.query.listParams;
@@ -51,7 +51,39 @@ class BillController {
       message: '账单列表获取成功'
     };
   }
-
+  async list(ctx) {
+    const { userId } = ctx.request.body.user;
+    // const userId = 1;
+    const { offset, size, startTime, endTime } = ctx.query.listParams;
+    const result = await getBillList({ offset, size, startTime, endTime, userId });
+    // 拿到当前时间，去获取账单
+    const nowDate = new Date();
+    let day = nowDateFormatTool(nowDate, 'YYYY-MM-DD');
+    let month = nowDateFormatTool(nowDate, 'YYYY-MM');
+    let year = nowDateFormatTool(nowDate, 'YYYY');
+    let amountDay = await getAmount({userId, date: day});
+    let amountMoth = await getAmount({userId, date: month});
+    let amountYear = await getAmount({userId, date: year});
+    // let amount = await getAmount({userId, date});
+    // amount = amount ? amount : {};
+    if (!result) {
+      const errorMessage = new Error(errorType.INTERNAL_PROBLEMS);
+      ctx.app.emit('error', errorMessage, ctx);
+      return;
+    }
+    ctx.body = {
+      code: 0,
+      data: {
+        records: result,
+        amount: {
+          amountDay: amountDay ? amountDay : {},
+          amountMoth: amountMoth ? amountMoth : {},
+          amountYear: amountYear ? amountYear : {}
+        }
+      },
+      message: '账单列表获取成功'
+    };
+  }
   async amount(ctx) {
     const { userId } = ctx.request.body.user;
     const { date } = ctx.query;
