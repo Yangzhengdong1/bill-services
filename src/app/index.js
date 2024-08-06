@@ -10,6 +10,7 @@ const errorHandle = require('./error-handle');
 const billRouter = require('../router/bill.router');
 const accountRouter = require('../router/account.router');
 const templateRouter = require('../router/template.router');
+const chartsRouter = require('../router/charts.router');
 
 
 const app = new Koa();
@@ -23,6 +24,9 @@ app.use(accountRouter.routes());
 app.use(accountRouter.allowedMethods());
 app.use(templateRouter.routes());
 app.use(templateRouter.allowedMethods());
+app.use(chartsRouter.routes());
+app.use(chartsRouter.allowedMethods());
+
 
 app.on('error', errorHandle);
 
