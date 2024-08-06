@@ -138,7 +138,7 @@ class BillService {
   async detail(id) {
     const statement = `
       SELECT
-        DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime, amount AS amount, remark AS remark, pay_type AS payType, type AS billType, id AS wid
+        DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime, amount AS amount, remark AS remark, pay_type AS payType, type AS billType, id AS id
       FROM bills WHERE id = ?;`;
     try {
       const [ result ] = await connection.execute(statement, [id]);
