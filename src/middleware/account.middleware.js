@@ -40,7 +40,7 @@ const hashEncryption = password => bcrypt.hashSync(password, saltRounds);
 
 // 错误处理
 const handleError = (errorMessage, logMessage, ctx) => {
-  console.log(logMessage);
+  // console.log(logMessage);
   const error = new Error(errorMessage);
   ctx.app.emit('error', error, ctx);
 };

@@ -1,4 +1,6 @@
 const errorType = require('../constant/error-type');
+const { logger } = require("../utils/log4js");
+
 const errorHandle = (error, ctx) => {
   let status = 200,
     message,
@@ -23,7 +25,6 @@ const errorHandle = (error, ctx) => {
     case errorType.ACCOUNT_NUMBER_AND_ID_DO_NOT_MATCH:
       code = -1;
       message = '当前账号名称与openid不一致';
-      status = 400;
       break;
     case errorType.UNAUTHORIZED:
       code = -1;
@@ -60,6 +61,7 @@ const errorHandle = (error, ctx) => {
       message = 'NOT FOUND';
   }
 
+  logger.warn(message);
   ctx.status = status;
   ctx.body = {
     code,
