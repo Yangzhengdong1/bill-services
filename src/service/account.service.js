@@ -43,6 +43,31 @@ class AccountService {
     }
   }
 
+  async queryUserV2(params) {
+    try {
+      const keys = Object.keys(params);
+      let values = [];
+      // 将非 sql 字段剔除
+      const sqlKeys = keys.filter(key => ['openid', 'id', 'name', 'nickname'].includes(key));
+      let statement = `
+        SELECT
+          id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
+        FROM users
+      `;
+      sqlKeys.forEach((key, index) => {
+        statement += index === 0 ? ` WHERE ${key} = ?` : ` AND ${key} = ?`;
+        values.push(params[key]);
+      });
+
+
+      const result = await connection.execute(statement, values);
+      return result[0];
+    } catch (error) {
+      console.log(error, '查询用户数据库报错');
+      return false;
+    }
+  }
+
   async register(params) {
     try {
       const { openid, avatarUrl, nickname, username, password } = params;
