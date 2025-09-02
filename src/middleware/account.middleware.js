@@ -178,6 +178,32 @@ class AccountMiddleware {
     await next();
   }
 
+  async resetPasswordMiddleware(ctx, next) {
+    const { username, password, newPassword } = ctx.request.body;
+    if (!username || !password || !newPassword) {
+      handleError(errorType.ARGUMENT_IS_NOT_EMPTY, '缺少参数-重置密码', ctx);
+      return;
+    }
+
+    // 验证旧密码是否正确
+    const [ result ] = await queryUser({username});
+    if (!result) {
+      handleError(errorType.USER_NOT_FOUND, '用户未找到', ctx);
+      return;
+    }
+    const { password: pwd } = result;
+    const compResult = bcrypt.compareSync(password, pwd);
+    if (!compResult) {
+      handleError(errorType.ERROR_INCORRECT_USERNAME_OR_PASSWORD, '旧密码与账号不匹配', ctx);
+      return;
+    }
+
+    // hash 加密
+    ctx.request.body.newPassword = hashEncryption(newPassword);
+
+    await next();
+  }
+
   async visitorLoginVerify(ctx, next) {
     let { password, username } = ctx.request.body;
     if ( !username || !password ) {

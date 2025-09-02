@@ -53,6 +53,22 @@ class AccountController {
       };
     }
   }
+
+  async resetPassword(ctx) {
+    const { newPassword } = ctx.request.body;
+    const { userId } = ctx.request.body.user;
+    const params = { id: userId, password: newPassword }
+    const result = await accountService.updatedUser(params);
+    if (!result) {
+      const error = new Error(errorType.INTERNAL_PROBLEMS);
+      ctx.app.emit('error', error, ctx);
+    } else {
+      ctx.body = {
+        code: 0,
+        message: "密码重置成功"
+      };
+    }
+  }
 }
 
 module.exports = new AccountController();

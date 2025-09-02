@@ -115,6 +115,37 @@ class AccountService {
       console.log("查询出错了", err);
     }
   }
+
+  async updatedUser(params) {
+    const { sqlKeys, values } = this.getKeys(params);
+    if (!sqlKeys.length || !values.length || !params.id) return false;
+
+    const setClause = sqlKeys.map(key => `${key} = ?`).join(", ");
+    const statement = `UPDATE users SET ${setClause} WHERE id = ?`;
+    values.push(params.id);
+
+    try {
+      const [result] = await connection.execute(statement, values);
+      return result;
+    } catch (error) {
+      console.log(error, "更新用户信息");
+      return false;
+    }
+  }
+
+  getKeys(params) {
+    const keys = Object.keys(params);
+    const sqlKeys = keys.filter(key => ['avatarUrl', 'nickname', 'name'].includes(key));
+    const values = sqlKeys.map(key => params[key]);
+    return { sqlKeys, values };
+  }
+
+  getQueryKeys(params) {
+    const keys = Object.keys(params);
+    const sqlKeys = keys.filter(key => ['openid', 'id', 'name', 'nickname'].includes(key));
+    const values = sqlKeys.map(key => params[key]);
+    return { sqlKeys, values };
+  }
 }
 
 module.exports = new AccountService();
