@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 const config = require("../app/config");
 const errorType = require("../constant/error-type");
-const { queryUser, register } = require('../service/account.service');
+const { queryUser, register, queryUserV2 } = require('../service/account.service');
 const WXBizDataCrypt = require("../utils/WXBizDataCrypt");
 const { generateRandomString } = require("../utils/utils");
 
@@ -180,6 +180,8 @@ class AccountMiddleware {
 
   async resetPasswordMiddleware(ctx, next) {
     const { username, password, newPassword } = ctx.request.body;
+    const { userId } = ctx.request.body.user;
+
     if (!username || !password || !newPassword) {
       handleError(errorType.ARGUMENT_IS_NOT_EMPTY, '缺少参数-重置密码', ctx);
       return;
@@ -189,6 +191,12 @@ class AccountMiddleware {
     const [ result ] = await queryUser({username});
     if (!result) {
       handleError(errorType.USER_NOT_FOUND, '用户未找到', ctx);
+      return;
+    }
+    // 校验当前登录用户与被修改用户
+    const result2 = await queryUserV2({ name: username, id: userId });
+    if (!result2?.length) {
+      handleError(errorType.USER_MISMATCH_ERROR, "", ctx);
       return;
     }
     const { password: pwd } = result;

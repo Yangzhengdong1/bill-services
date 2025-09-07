@@ -11,6 +11,7 @@ const NICKNAME_DUPLICATION = 'nickname_duplication';
 const THE_ACCOUNT_HAS_BEEN_BOUND = 'the_account_has_been_bound'; // 当前账号已被绑定
 const USER_NOT_FOUND = 'user_not_found'; // 用户未找到
 const ERROR_INCORRECT_USERNAME_OR_PASSWORD = 'error_incorrect_username_or_password'; // 用户名或密码错误
+const USER_MISMATCH_ERROR = "user_mismatch_error"; // 当前登录用户与被修改用户不一致
 
 module.exports = {
   ARGUMENT_IS_NOT_EMPTY,
@@ -25,5 +26,6 @@ module.exports = {
   THE_ACCOUNT_HAS_BEEN_BOUND,
   NICKNAME_DUPLICATION,
   USER_NOT_FOUND,
-  ERROR_INCORRECT_USERNAME_OR_PASSWORD
+  ERROR_INCORRECT_USERNAME_OR_PASSWORD,
+  USER_MISMATCH_ERROR
 };

@@ -48,7 +48,7 @@ class AccountService {
       const keys = Object.keys(params);
       let values = [];
       // 将非 sql 字段剔除
-      const sqlKeys = keys.filter(key => ['openid', 'id', 'name', 'nickname'].includes(key));
+      const sqlKeys = keys.filter(key => ['openid', 'id', 'name', 'nickname', 'password'].includes(key));
       let statement = `
         SELECT
           id AS userId, name AS username, avatar_url AS avatarUrl, password AS password, nickname AS nickname
@@ -59,6 +59,8 @@ class AccountService {
         values.push(params[key]);
       });
 
+      console.log(statement, "--------statement-----");
+      console.log(values, "--------statement-----");
 
       const result = await connection.execute(statement, values);
       return result[0];
@@ -118,6 +120,7 @@ class AccountService {
 
   async updatedUser(params) {
     const { sqlKeys, values } = this.getKeys(params);
+    console.log(sqlKeys, values, "--------------------");
     if (!sqlKeys.length || !values.length || !params.id) return false;
 
     const setClause = sqlKeys.map(key => `${key} = ?`).join(", ");
@@ -135,7 +138,7 @@ class AccountService {
 
   getKeys(params) {
     const keys = Object.keys(params);
-    const sqlKeys = keys.filter(key => ['avatarUrl', 'nickname', 'name'].includes(key));
+    const sqlKeys = keys.filter(key => ['avatarUrl', 'nickname', 'name', 'password'].includes(key));
     const values = sqlKeys.map(key => params[key]);
     return { sqlKeys, values };
   }

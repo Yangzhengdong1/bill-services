@@ -55,6 +55,10 @@ const errorHandle = (error, ctx) => {
       code = -1;
       message = '用户名或密码错误';
       break;
+    case errorType.USER_MISMATCH_ERROR:
+      code = -1;
+      message = "当前登录用户与被修改用户不一致";
+      break;
     default:
       status = 404;
       code = -1;

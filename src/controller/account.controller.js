@@ -57,7 +57,7 @@ class AccountController {
   async resetPassword(ctx) {
     const { newPassword } = ctx.request.body;
     const { userId } = ctx.request.body.user;
-    const params = { id: userId, password: newPassword }
+    const params = { id: userId, password: newPassword };
     const result = await accountService.updatedUser(params);
     if (!result) {
       const error = new Error(errorType.INTERNAL_PROBLEMS);
