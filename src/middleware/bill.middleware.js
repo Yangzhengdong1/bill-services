@@ -8,8 +8,8 @@ class BillMiddleware {
    */
   async paramsVerify(ctx, next) {
     let errorMessage;
-    const { payType, billType, amount } = ctx.request.body;
-    if (!(payType + '') || !(billType + '') || !amount) {
+    const { payType, billType, amount, categorId } = ctx.request.body;
+    if (!(payType + '') || !(billType + '') || !amount || !categorId) {
       errorMessage = new Error(errorType.ARGUMENT_IS_NOT_EMPTY);
       ctx.app.emit('error', errorMessage, ctx);
       return;

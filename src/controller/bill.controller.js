@@ -1,12 +1,22 @@
 const { create, getBillList, getAmount, remove, detail, update } = require('../service/bill.service');
+const categorService = require('../service/categor.service')
 const errorType = require('../constant/error-type');
 const { dateFormatFun, nowDateFormatTool } = require('../utils/utils');
 
 class BillController {
   async create(ctx) {
-    const { payType, billType, amount, remark, user } = ctx.request.body;
+    const { payType, billType, amount, remark, user, categorId, createdAt } = ctx.request.body;
     const { userId } = user;
-    const params = { payType, billType, amount, remark, userId };
+    const params = { payType, billType, amount, remark, userId, categorId, createdAt };
+    // 校验分类ID是否存在
+    const categor = await categorService.detail(categorId)
+
+    if (!categor) {
+      const error = new Error(errorType.NO_CLASSIFICATION_DETAILS_WERE_FOUND);
+      ctx.app.emit('error', error, ctx);
+      return
+    }
+
     // 存入数据库
     const result = await create(params);
     if (result) {

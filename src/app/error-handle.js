@@ -59,6 +59,10 @@ const errorHandle = (error, ctx) => {
       code = -1;
       message = "当前登录用户与被修改用户不一致";
       break;
+    case errorType.NO_CLASSIFICATION_DETAILS_WERE_FOUND:
+      code = -1;
+      message = "分类不存在，请检查"
+      break;
     default:
       status = 404;
       code = -1;

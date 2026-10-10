@@ -22,16 +22,16 @@ const filterStatement = (alias, date) => {
 class BillService {
   /**
    * @description: 数据库中创建一条账单数据
-   * @param {*} params {payType, billType, amount, userId, remark}
+   * @param {*} params {payType, billType, amount, userId, remark, categorId}
    * @return {*} 返回数据库插入结果
    */
   async create(params) {
-    const { payType, billType, amount, userId, remark } = params;
+    const { payType, billType, amount, userId, remark, categorId, createdAt } = params;
     const statement = `
-      INSERT INTO bills(type, pay_type, remark, user_id, amount) VALUES(?, ?, ?, ?, ?);
+      INSERT INTO bills(type, pay_type, remark, user_id, amount, categor_id, createAt) VALUES(?, ?, ?, ?, ?, ?, ?);
     `;
     try {
-      const [ result ] = await connection.execute(statement, [billType, payType, remark, userId, amount]);
+      const [ result ] = await connection.execute(statement, [billType, payType, remark, userId, amount, categorId, createdAt]);
       return result;
     } catch (err) {
       console.log('数据库插入数据失败', err);
@@ -57,6 +57,7 @@ class BillService {
     const statement = `
       SELECT
       type AS type, id AS id, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
+      , categor_id as categorId
       FROM bills
       WHERE user_id = ? ${optionalStatement} LIMIT ?, ?;
     `;
@@ -87,6 +88,7 @@ class BillService {
     const statement = `
       SELECT
       type AS type, id AS id, pay_type AS payType, remark AS remark, FORMAT(amount, 2) AS amount, DATE_FORMAT(createAt, '%Y-%m-%d %H:%i:%s') AS createTime
+      , categor_id as categorId
       FROM bills
       WHERE user_id = ? ${optionalStatement} ORDER BY createAt DESC LIMIT ?, ?;
     `;
@@ -150,10 +152,10 @@ class BillService {
   }
 
   async update(params) {
-    const { payType, billType, id, remark, amount } = params;
-    const statement = `UPDATE bills SET pay_type = ?, type = ?, remark = ?, amount = ? WHERE id = ?`;
+    const { payType, billType, id, remark, amount, categorId } = params;
+    const statement = `UPDATE bills SET pay_type = ?, type = ?, remark = ?, amount = ?, categor_id = ? WHERE id = ?`;
     try {
-      const [result] = await connection.execute(statement, [payType, billType, remark, amount, id]);
+      const [result] = await connection.execute(statement, [payType, billType, remark, amount, categorId, id]);
       return result;
     } catch (err) {
       console.log("更新账单失败：", err);

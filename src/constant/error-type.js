@@ -12,6 +12,7 @@ const THE_ACCOUNT_HAS_BEEN_BOUND = 'the_account_has_been_bound'; // 当前账号
 const USER_NOT_FOUND = 'user_not_found'; // 用户未找到
 const ERROR_INCORRECT_USERNAME_OR_PASSWORD = 'error_incorrect_username_or_password'; // 用户名或密码错误
 const USER_MISMATCH_ERROR = "user_mismatch_error"; // 当前登录用户与被修改用户不一致
+const NO_CLASSIFICATION_DETAILS_WERE_FOUND= "no_classification_details_were_found"; // 未查询到分类详情
 
 module.exports = {
   ARGUMENT_IS_NOT_EMPTY,
@@ -27,5 +28,6 @@ module.exports = {
   NICKNAME_DUPLICATION,
   USER_NOT_FOUND,
   ERROR_INCORRECT_USERNAME_OR_PASSWORD,
-  USER_MISMATCH_ERROR
+  USER_MISMATCH_ERROR,
+  NO_CLASSIFICATION_DETAILS_WERE_FOUND
 };
