@@ -71,19 +71,21 @@ class BillService {
   }
 
   async getBillList(params) {
-    const { offset, size, userId, startTime, endTime } = params;
+    let { offset, size, userId, startTime, endTime } = params;
     // 可选参数 startTime, endTime、payType、billType
     let optionalStatement = '';
     let queryField = [userId, offset, size];
     const startTimeSta = `AND createAt >= ?`;
     const endTimeSta = `AND createAt BETWEEN ? AND ?`;
-    if (startTime) {
-      optionalStatement = startTimeSta;
-      queryField = [userId, startTime, offset, size];
-    }
     if (startTime && endTime) {
       optionalStatement = endTimeSta;
+      startTime = startTime + ' 00:00:00'
+      endTime = endTime + ' 23:59:59'
       queryField = [userId, startTime, endTime, offset, size];
+    } else if (startTime) {
+      startTime = startTime + ' 00:00:00'
+      optionalStatement = startTimeSta;
+      queryField = [userId, startTime, offset, size];
     }
     const statement = `
       SELECT

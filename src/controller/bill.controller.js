@@ -67,7 +67,7 @@ class BillController {
     const { offset, size, startTime, endTime } = ctx.query.listParams;
     const result = await getBillList({ offset, size, startTime, endTime, userId });
     // 拿到当前时间，去获取账单
-    const nowDate = new Date();
+    const nowDate = startTime ?? new Date();
     let day = nowDateFormatTool(nowDate, 'YYYY-MM-DD');
     let month = nowDateFormatTool(nowDate, 'YYYY-MM');
     let year = nowDateFormatTool(nowDate, 'YYYY');

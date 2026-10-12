@@ -51,11 +51,25 @@ const generateRandomString = (prefix, length) => {
   return `${prefix}-${randomString}`;
 }
 
+const regex = /^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/;
+/** 
+ * @description: 校验时间日期传参格式
+ * @param {*} date
+ * @return {*}
+ */
+const checkDateFormat = (date) => {
+  if (date === null || date === undefined) {
+    return true
+  }
+  return regex.test(date)
+}
+
 
 
 
 module.exports = {
   dateFormatFun,
   nowDateFormatTool,
-  generateRandomString
+  generateRandomString,
+  checkDateFormat
 };

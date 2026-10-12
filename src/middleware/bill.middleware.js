@@ -1,4 +1,5 @@
 const errorType = require('../constant/error-type');
+const { checkDateFormat } = require('../utils/utils');
 
 class BillMiddleware {
   /**
@@ -50,7 +51,7 @@ class BillMiddleware {
   }
   async verifyList(ctx, next) {
     let { pageSize, pageNum, startTime, endTime } = ctx.query;
-    if (!pageSize || !pageNum) {
+    if (!pageSize || !pageNum || !checkDateFormat(startTime) || !checkDateFormat(endTime)) {
       const errorMessage = new Error(errorType.INVALID_PARAMETER);
       ctx.app.emit('error', errorMessage, ctx);
       return;
