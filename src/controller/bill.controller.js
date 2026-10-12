@@ -11,7 +11,7 @@ class BillController {
     // 校验分类ID是否存在
     const categor = await categorService.detail(categorId)
 
-    if (!categor) {
+    if (!categor || !categor[0]) {
       const error = new Error(errorType.NO_CLASSIFICATION_DETAILS_WERE_FOUND);
       ctx.app.emit('error', error, ctx);
       return
@@ -129,9 +129,13 @@ class BillController {
       ctx.app.emit('error', error, ctx);
       return;
     }
+    // 获取分类详情
+    let data = result[0]
+    const categor = await categorService.detail(data.categorId)
+    data.categor = (!categor || !categor[0]) ? {} : categor[0]
     ctx.body = {
       code: 0,
-      data: result[0],
+      data,
       message: "操作成功"
     }
   }
